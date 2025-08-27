@@ -1,0 +1,25 @@
+modules = ["web", "nodejs-20", "python-3.12"]
+run = "python undefined"
+
+[nix]
+channel = "stable-25_05"
+packages = ["glibcLocales"]
+
+[deployment]
+run = ["sh", "-c", "python undefined"]
+
+[workflows]
+runButton = "Start NeuroNix System"
+
+[[workflows.workflow]]
+name = "Start NeuroNix System"
+author = 46963000
+mode = "parallel"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python ml_api.py"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python -m http.server 5000"
