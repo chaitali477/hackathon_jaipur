@@ -30,6 +30,7 @@
                 <a href="#resource-optimization" class="nav-link">Resource Optimization</a>
                 <a href="#environmental-impact" class="nav-link">Environmental Impact</a>
                 <a href="#training-mode" class="nav-link">Training Mode</a>
+                <a href="#ar-visualization" class="nav-link">AR/VR Visualization</a>
                 <a href="#alerts" class="nav-link">Alerts</a>
                 <a href="#data-sources" class="nav-link">Data Sources</a>
                 <a href="#analytics" class="nav-link">Analytics</a>
@@ -1170,6 +1171,311 @@
         <div class="section-content">
             <div class="training-mode-layout">
                 <!-- Training Controls Panel -->
+
+
+    <!-- AR/VR Visualization Section -->
+    <section id="ar-visualization" class="section">
+        <div class="section-header">
+            <h2>VR/AR Based Fire Visualization</h2>
+            <p>Immersive 3D/AR fire spread simulation for training and awareness</p>
+        </div>
+        <div class="section-content">
+            <div class="ar-visualization-layout">
+                <!-- AR Controls Panel -->
+                <div class="ar-controls-panel">
+                    <div class="panel-header">
+                        <h3>Visualization Mode</h3>
+                        <div class="mode-selector">
+                            <button id="3d-mode-btn" class="mode-btn active">
+                                <i class="fas fa-cube"></i>
+                                <span>3D Mode</span>
+                            </button>
+                            <button id="ar-mode-btn" class="mode-btn">
+                                <i class="fas fa-camera"></i>
+                                <span>AR Mode</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Environmental Parameters -->
+                    <div class="parameter-controls">
+                        <h4>Environmental Settings</h4>
+                        <div class="control-group">
+                            <label for="ar-wind-speed">Wind Speed</label>
+                            <input type="range" id="ar-wind-speed" min="5" max="40" value="15">
+                            <span id="ar-wind-value">15</span> km/h
+                        </div>
+                        <div class="control-group">
+                            <label for="ar-wind-direction">Wind Direction</label>
+                            <select id="ar-wind-direction">
+                                <option value="0">North</option>
+                                <option value="45" selected>Northeast</option>
+                                <option value="90">East</option>
+                                <option value="135">Southeast</option>
+                                <option value="180">South</option>
+                                <option value="225">Southwest</option>
+                                <option value="270">West</option>
+                                <option value="315">Northwest</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label for="ar-humidity">Humidity</label>
+                            <input type="range" id="ar-humidity" min="20" max="80" value="45">
+                            <span id="ar-humidity-value">45%</span>
+                        </div>
+                        <div class="control-group">
+                            <label for="ar-temperature">Temperature</label>
+                            <input type="range" id="ar-temperature" min="15" max="45" value="32">
+                            <span id="ar-temperature-value">32°C</span>
+                        </div>
+                        <div class="control-group">
+                            <label for="ar-vegetation-density">Vegetation Density</label>
+                            <select id="ar-vegetation-density">
+                                <option value="sparse">Sparse</option>
+                                <option value="moderate" selected>Moderate</option>
+                                <option value="dense">Dense</option>
+                                <option value="very-dense">Very Dense</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Visualization Features -->
+                    <div class="feature-toggles">
+                        <h4>Display Options</h4>
+                        <div class="toggle-group">
+                            <label class="toggle-item">
+                                <input type="checkbox" id="show-terrain" checked>
+                                <span class="toggle-label">Show Terrain</span>
+                            </label>
+                            <label class="toggle-item">
+                                <input type="checkbox" id="show-vegetation" checked>
+                                <span class="toggle-label">Show Vegetation</span>
+                            </label>
+                            <label class="toggle-item">
+                                <input type="checkbox" id="show-wind-vectors" checked>
+                                <span class="toggle-label">Wind Vectors</span>
+                            </label>
+                            <label class="toggle-item">
+                                <input type="checkbox" id="show-heat-zones">
+                                <span class="toggle-label">Heat Zones</span>
+                            </label>
+                            <label class="toggle-item">
+                                <input type="checkbox" id="show-smoke-simulation">
+                                <span class="toggle-label">Smoke Simulation</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Control Buttons -->
+                    <div class="ar-controls">
+                        <button id="start-ar-simulation" class="control-btn primary">
+                            <i class="fas fa-play"></i>
+                            Start 3D Simulation
+                        </button>
+                        <button id="reset-ar-simulation" class="control-btn">
+                            <i class="fas fa-refresh"></i>
+                            Reset Scene
+                        </button>
+                        <button id="fullscreen-ar" class="control-btn">
+                            <i class="fas fa-expand"></i>
+                            Fullscreen
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main AR Scene Container -->
+                <div class="ar-visualization-container">
+                    <div class="visualization-header">
+                        <h3 id="viz-mode-title">3D Fire Simulation</h3>
+                        <div class="visualization-status">
+                            <div class="status-indicator" id="ar-status">Ready</div>
+                            <div class="simulation-timer" id="ar-simulation-time">00:00</div>
+                        </div>
+                    </div>
+
+                    <div class="scene-container" id="ar-scene-container">
+                        <canvas id="ar-canvas"></canvas>
+                        
+                        <!-- Loading Overlay -->
+                        <div class="loading-overlay" id="ar-loading">
+                            <i class="fas fa-spinner fa-spin fa-2x"></i>
+                            <p>Initializing 3D visualization...</p>
+                        </div>
+
+                        <!-- AR Overlay Elements -->
+                        <div class="ar-overlay" id="ar-overlay" style="display: none;">
+                            <div class="ar-crosshair">
+                                <div class="crosshair-dot"></div>
+                                <div class="crosshair-ring"></div>
+                            </div>
+                            <div class="ar-instructions-overlay">
+                                <p>Point camera at a flat surface to place fire simulation</p>
+                            </div>
+                        </div>
+
+                        <!-- Camera Controls (for 3D mode) -->
+                        <div class="camera-controls" id="camera-controls">
+                            <div class="control-group">
+                                <button id="rotate-left" class="control-btn">
+                                    <i class="fas fa-rotate-left"></i>
+                                </button>
+                                <button id="rotate-right" class="control-btn">
+                                    <i class="fas fa-rotate-right"></i>
+                                </button>
+                            </div>
+                            <div class="control-group">
+                                <button id="zoom-in" class="control-btn">
+                                    <i class="fas fa-search-plus"></i>
+                                </button>
+                                <button id="zoom-out" class="control-btn">
+                                    <i class="fas fa-search-minus"></i>
+                                </button>
+                            </div>
+                            <div class="control-group">
+                                <button id="reset-camera" class="control-btn">
+                                    <i class="fas fa-home"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AR Instructions (visible in AR mode) -->
+                    <div class="ar-instructions" id="ar-instructions" style="display: none;">
+                        <div class="instruction-steps">
+                            <div class="step">
+                                <i class="fas fa-camera"></i>
+                                <span>Allow camera access when prompted</span>
+                            </div>
+                            <div class="step">
+                                <i class="fas fa-mobile-alt"></i>
+                                <span>Point your device at a flat, well-lit surface</span>
+                            </div>
+                            <div class="step">
+                                <i class="fas fa-hand-pointer"></i>
+                                <span>Tap to place fire simulation in the real world</span>
+                            </div>
+                            <div class="step">
+                                <i class="fas fa-expand-arrows-alt"></i>
+                                <span>Move your device to explore the 3D fire spread</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analysis Panel -->
+                <div class="ar-analysis-panel">
+                    <div class="panel-header">
+                        <h3>Simulation Metrics</h3>
+                        <div class="analysis-mode">
+                            <span class="mode-indicator active">Real-time</span>
+                        </div>
+                    </div>
+
+                    <div class="ar-metrics">
+                        <div class="metric-item">
+                            <div class="metric-icon">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-label">Burned Area</span>
+                                <span class="metric-value" id="ar-burn-area">0 ha</span>
+                            </div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-icon">
+                                <i class="fas fa-vector-square"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-label">Fire Perimeter</span>
+                                <span class="metric-value" id="ar-fire-perimeter">0 km</span>
+                            </div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-icon">
+                                <i class="fas fa-tachometer-alt"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-label">Spread Rate</span>
+                                <span class="metric-value" id="ar-spread-rate">0 m/min</span>
+                            </div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-icon">
+                                <i class="fas fa-thermometer-three-quarters"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-label">Max Temperature</span>
+                                <span class="metric-value" id="ar-max-temp">32°C</span>
+                            </div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-label">Fire Sources</span>
+                                <span class="metric-value" id="fire-sources-count">0</span>
+                            </div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-icon">
+                                <i class="fas fa-th"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-label">Active Cells</span>
+                                <span class="metric-value" id="active-cells-count">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Export Options -->
+                    <div class="export-options">
+                        <h4>Export & Share</h4>
+                        <div class="export-actions">
+                            <button class="export-btn">
+                                <i class="fas fa-camera"></i>
+                                Screenshot
+                            </button>
+                            <button class="export-btn">
+                                <i class="fas fa-video"></i>
+                                Record Video
+                            </button>
+                            <button class="export-btn">
+                                <i class="fas fa-share-alt"></i>
+                                Share Scene
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Info -->
+                    <div class="ar-info">
+                        <h4>About AR/VR Mode</h4>
+                        <p>Experience fire spread simulation in immersive 3D or augmented reality. Perfect for training scenarios and public awareness demonstrations.</p>
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <i class="fas fa-eye"></i>
+                                <span>Interactive 3D fire simulation</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-mobile-alt"></i>
+                                <span>AR mode for real-world placement</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-wind"></i>
+                                <span>Real-time environmental effects</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Educational and training tool</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
                 <div class="training-controls-panel">
                     <div class="panel-header">
                         <h3>Training Scenario</h3>
