@@ -23,3 +23,7 @@ args = "python ml_api.py"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "python -m http.server 5000"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
