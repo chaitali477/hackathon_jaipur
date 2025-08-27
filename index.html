@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/three.js/build/ar-threex.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/three.js/build/ar.js"></script>
 </head>
 <body>
     <!-- Professional Fixed Header -->
@@ -767,7 +770,7 @@
                             <span class="score-value" id="optimization-score">--</span>
                         </div>
                     </div>
-                    
+
                     <!-- Coverage Metrics -->
                     <div class="metrics-grid">
                         <div class="metric-card">
@@ -874,7 +877,7 @@
                             <span>Real-time Tracking</span>
                         </div>
                     </div>
-                    
+
                     <!-- Current Emissions Summary -->
                     <div class="emissions-summary">
                         <div class="emission-metric">
@@ -966,7 +969,7 @@
                             </div>
                             <div class="score-label">Overall Severity Score</div>
                         </div>
-                        
+
                         <div class="impact-categories">
                             <div class="impact-category">
                                 <div class="category-icon">
@@ -1068,18 +1071,18 @@
                             <button class="viz-btn" data-viz="carbon">Carbon Loss</button>
                         </div>
                     </div>
-                    
+
                     <div class="visualization-container">
                         <!-- Recovery Progress Chart -->
                         <div class="viz-panel active" id="recovery-viz">
                             <canvas id="recoveryProgressChart"></canvas>
                         </div>
-                        
+
                         <!-- Economic Impact Chart -->
                         <div class="viz-panel" id="economic-viz">
                             <canvas id="economicImpactChart"></canvas>
                         </div>
-                        
+
                         <!-- Carbon Sequestration Loss Chart -->
                         <div class="viz-panel" id="carbon-viz">
                             <canvas id="carbonLossChart"></canvas>
@@ -1107,7 +1110,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Analysis Controls -->
             <div class="analysis-controls">
                 <div class="control-section">
@@ -1139,7 +1142,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="analysis-actions">
                     <button id="run-carbon-analysis" class="action-btn primary">
                         <i class="fas fa-calculator"></i>
@@ -1176,7 +1179,7 @@
                             <span class="score-unit">points</span>
                         </div>
                     </div>
-                    
+
                     <!-- Scenario Selection -->
                     <div class="scenario-selection">
                         <h4>Choose Your Scenario</h4>
@@ -1240,7 +1243,7 @@
                                 <span class="stat-value" id="best-score">0</span>
                             </div>
                         </div>
-                        
+
                         <div class="badges-section">
                             <h5>Achievements</h5>
                             <div class="badges-grid" id="badges-grid">
@@ -1291,7 +1294,7 @@
                         </div>
                     </div>
                     <div id="training-map" class="training-map"></div>
-                    
+
                     <!-- Action Instructions -->
                     <div class="action-instructions">
                         <div class="instruction-card active" id="instruction-card">
@@ -1310,7 +1313,7 @@
                             <button class="toggle-btn" data-view="without-actions">Without Actions</button>
                         </div>
                     </div>
-                    
+
                     <!-- Performance Metrics -->
                     <div class="performance-metrics">
                         <div class="metric-card">
@@ -1540,7 +1543,7 @@
                     <span>NeuroNix Team</span>
                 </div>
             </div>
-            
+
             <div class="team-grid">
                 <!-- Team Leader -->
                 <div class="team-member leader">
@@ -1637,7 +1640,7 @@
                         </div>
                         <div class="member-info">
                             <h3>Chaitali Kohapare</h3>
-                            <p class="role">Team Member>
+                            <p class="role">Team Member</p>
                             <p class="college">B.E. Computer Engineering Student</p>
                             <div class="member-stats">
                                 <div class="stat">

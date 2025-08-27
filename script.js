@@ -2888,6 +2888,809 @@ class TrainingMode {
                 baseImpact = 0.4;
                 break;
             case 'burn':
+
+
+// AR/VR Visualization Class
+class ARFireVisualization {
+    constructor() {
+        this.scene = null;
+        this.camera = null;
+        this.renderer = null;
+        this.arContext = null;
+        this.isARMode = false;
+        this.isSimulationRunning = false;
+        this.fireGrid = [];
+        this.terrainMesh = null;
+        this.fireMeshes = [];
+        this.windVectors = [];
+        this.smokeParticles = [];
+        this.animationFrameId = null;
+        this.simulationStartTime = null;
+        
+        // Simulation parameters
+        this.params = {
+            windSpeed: 15,
+            windDirection: 45,
+            humidity: 45,
+            temperature: 32,
+            vegetationDensity: 'dense'
+        };
+
+        // Grid settings
+        this.gridSize = 20;
+        this.cellSize = 50; // meters per cell
+        
+        this.init();
+    }
+
+    async init() {
+        this.setupEventListeners();
+        this.initializeParameters();
+        await this.initialize3DScene();
+        this.updateLoadingState(false);
+    }
+
+    setupEventListeners() {
+        // Mode switching
+        document.getElementById('3d-mode-btn').addEventListener('click', () => this.switchTo3DMode());
+        document.getElementById('ar-mode-btn').addEventListener('click', () => this.switchToARMode());
+
+        // Parameter controls
+        document.getElementById('ar-wind-speed').addEventListener('input', (e) => {
+            this.params.windSpeed = parseInt(e.target.value);
+            document.getElementById('ar-wind-value').textContent = e.target.value;
+            this.updateWindVisualization();
+        });
+
+        document.getElementById('ar-wind-direction').addEventListener('change', (e) => {
+            this.params.windDirection = parseInt(e.target.value);
+            this.updateWindVisualization();
+        });
+
+        document.getElementById('ar-humidity').addEventListener('input', (e) => {
+            this.params.humidity = parseInt(e.target.value);
+            document.getElementById('ar-humidity-value').textContent = e.target.value + '%';
+        });
+
+        document.getElementById('ar-temperature').addEventListener('input', (e) => {
+            this.params.temperature = parseInt(e.target.value);
+            document.getElementById('ar-temperature-value').textContent = e.target.value + '°C';
+        });
+
+        document.getElementById('ar-vegetation-density').addEventListener('change', (e) => {
+            this.params.vegetationDensity = e.target.value;
+            this.updateVegetationVisualization();
+        });
+
+        // Feature toggles
+        document.getElementById('show-terrain').addEventListener('change', (e) => {
+            if (this.terrainMesh) {
+                this.terrainMesh.visible = e.target.checked;
+            }
+        });
+
+        document.getElementById('show-vegetation').addEventListener('change', (e) => {
+            this.updateVegetationVisibility(e.target.checked);
+        });
+
+        document.getElementById('show-wind-vectors').addEventListener('change', (e) => {
+            this.updateWindVectorVisibility(e.target.checked);
+        });
+
+        document.getElementById('show-heat-zones').addEventListener('change', (e) => {
+            this.updateHeatZoneVisibility(e.target.checked);
+        });
+
+        document.getElementById('show-smoke-simulation').addEventListener('change', (e) => {
+            this.updateSmokeVisibility(e.target.checked);
+        });
+
+        // Control buttons
+        document.getElementById('start-ar-simulation').addEventListener('click', () => this.startSimulation());
+        document.getElementById('reset-ar-simulation').addEventListener('click', () => this.resetSimulation());
+        document.getElementById('fullscreen-ar').addEventListener('click', () => this.toggleFullscreen());
+
+        // Camera controls
+        document.getElementById('rotate-left').addEventListener('click', () => this.rotateCamera(-0.2));
+        document.getElementById('rotate-right').addEventListener('click', () => this.rotateCamera(0.2));
+        document.getElementById('zoom-in').addEventListener('click', () => this.zoomCamera(0.9));
+        document.getElementById('zoom-out').addEventListener('click', () => this.zoomCamera(1.1));
+        document.getElementById('reset-camera').addEventListener('click', () => this.resetCamera());
+
+        // Canvas interaction
+        const canvas = document.getElementById('ar-canvas');
+        canvas.addEventListener('click', (e) => this.handleCanvasClick(e));
+    }
+
+    initializeParameters() {
+        // Update display values
+        document.getElementById('ar-wind-value').textContent = this.params.windSpeed;
+        document.getElementById('ar-humidity-value').textContent = this.params.humidity + '%';
+        document.getElementById('ar-temperature-value').textContent = this.params.temperature + '°C';
+    }
+
+    async initialize3DScene() {
+        try {
+            const canvas = document.getElementById('ar-canvas');
+            
+            // Scene setup
+            this.scene = new THREE.Scene();
+            this.scene.background = new THREE.Color(0x87CEEB); // Sky blue
+
+            // Camera setup
+            this.camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+            this.camera.position.set(500, 400, 500);
+            this.camera.lookAt(0, 0, 0);
+
+            // Renderer setup
+            this.renderer = new THREE.WebGLRenderer({ 
+                canvas: canvas,
+                antialias: true,
+                alpha: true
+            });
+            this.renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+            this.renderer.shadowMap.enabled = true;
+            this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+            // Lighting
+            this.setupLighting();
+
+            // Create terrain
+            await this.createTerrain();
+
+            // Create vegetation
+            this.createVegetation();
+
+            // Create wind visualization
+            this.createWindVectors();
+
+            // Initialize fire grid
+            this.initializeFireGrid();
+
+            // Start render loop
+            this.animate();
+
+            showToast('3D visualization initialized successfully', 'success');
+        } catch (error) {
+            console.error('Error initializing 3D scene:', error);
+            showToast('Error initializing 3D visualization', 'error');
+        }
+    }
+
+    setupLighting() {
+        // Ambient light
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+        this.scene.add(ambientLight);
+
+        // Directional light (sun)
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(100, 200, 100);
+        directionalLight.castShadow = true;
+        directionalLight.shadow.mapSize.width = 2048;
+        directionalLight.shadow.mapSize.height = 2048;
+        directionalLight.shadow.camera.near = 0.5;
+        directionalLight.shadow.camera.far = 1000;
+        this.scene.add(directionalLight);
+    }
+
+    async createTerrain() {
+        const geometry = new THREE.PlaneGeometry(1000, 1000, 50, 50);
+        
+        // Add some height variation
+        const vertices = geometry.attributes.position.array;
+        for (let i = 2; i < vertices.length; i += 3) {
+            vertices[i] = Math.random() * 20 - 10; // Random height variation
+        }
+        geometry.computeVertexNormals();
+
+        const material = new THREE.MeshLambertMaterial({ 
+            color: 0x8B4513,
+            wireframe: false
+        });
+
+        this.terrainMesh = new THREE.Mesh(geometry, material);
+        this.terrainMesh.rotation.x = -Math.PI / 2;
+        this.terrainMesh.receiveShadow = true;
+        this.scene.add(this.terrainMesh);
+    }
+
+    createVegetation() {
+        const vegetationGroup = new THREE.Group();
+        
+        // Create simplified trees
+        for (let i = 0; i < 200; i++) {
+            const tree = this.createTree();
+            tree.position.x = (Math.random() - 0.5) * 900;
+            tree.position.z = (Math.random() - 0.5) * 900;
+            tree.position.y = 0;
+            vegetationGroup.add(tree);
+        }
+
+        this.vegetationGroup = vegetationGroup;
+        this.scene.add(vegetationGroup);
+    }
+
+    createTree() {
+        const group = new THREE.Group();
+
+        // Trunk
+        const trunkGeometry = new THREE.CylinderGeometry(2, 3, 20, 8);
+        const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+        const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+        trunk.position.y = 10;
+        trunk.castShadow = true;
+        group.add(trunk);
+
+        // Leaves
+        const leavesGeometry = new THREE.SphereGeometry(12, 8, 6);
+        const leavesMaterial = new THREE.MeshLambertMaterial({ color: 0x228B22 });
+        const leaves = new THREE.Mesh(leavesGeometry, leavesMaterial);
+        leaves.position.y = 25;
+        leaves.castShadow = true;
+        group.add(leaves);
+
+        return group;
+    }
+
+    createWindVectors() {
+        this.windVectorGroup = new THREE.Group();
+        
+        // Create wind vector arrows
+        for (let x = -400; x <= 400; x += 200) {
+            for (let z = -400; z <= 400; z += 200) {
+                const arrow = this.createWindArrow();
+                arrow.position.set(x, 50, z);
+                this.windVectorGroup.add(arrow);
+            }
+        }
+
+        this.scene.add(this.windVectorGroup);
+        this.updateWindVisualization();
+    }
+
+    createWindArrow() {
+        const group = new THREE.Group();
+        
+        // Arrow shaft
+        const shaftGeometry = new THREE.CylinderGeometry(1, 1, 30, 8);
+        const shaftMaterial = new THREE.MeshBasicMaterial({ color: 0x00BFFF, opacity: 0.7, transparent: true });
+        const shaft = new THREE.Mesh(shaftGeometry, shaftMaterial);
+        shaft.rotation.z = Math.PI / 2;
+        group.add(shaft);
+
+        // Arrow head
+        const headGeometry = new THREE.ConeGeometry(3, 8, 8);
+        const headMaterial = new THREE.MeshBasicMaterial({ color: 0x0080FF, opacity: 0.8, transparent: true });
+        const head = new THREE.Mesh(headGeometry, headMaterial);
+        head.position.x = 19;
+        head.rotation.z = -Math.PI / 2;
+        group.add(head);
+
+        return group;
+    }
+
+    initializeFireGrid() {
+        this.fireGrid = [];
+        for (let x = 0; x < this.gridSize; x++) {
+            this.fireGrid[x] = [];
+            for (let z = 0; z < this.gridSize; z++) {
+                this.fireGrid[x][z] = {
+                    state: 'vegetation', // 'vegetation', 'burning', 'burned'
+                    temperature: 20,
+                    fuelLoad: this.getFuelLoad(),
+                    mesh: null
+                };
+            }
+        }
+    }
+
+    getFuelLoad() {
+        const densityFactors = {
+            'sparse': 0.3,
+            'moderate': 0.6,
+            'dense': 1.0,
+            'very-dense': 1.4
+        };
+        return densityFactors[this.params.vegetationDensity] || 1.0;
+    }
+
+    updateWindVisualization() {
+        if (!this.windVectorGroup) return;
+
+        const windRadians = (this.params.windDirection * Math.PI) / 180;
+        const windStrength = this.params.windSpeed / 50; // Scale for visualization
+
+        this.windVectorGroup.children.forEach(arrow => {
+            arrow.rotation.y = windRadians;
+            arrow.scale.setScalar(windStrength);
+        });
+    }
+
+    updateVegetationVisualization() {
+        // Update vegetation density visualization
+        if (this.vegetationGroup) {
+            const densityFactors = {
+                'sparse': 0.3,
+                'moderate': 0.6,
+                'dense': 1.0,
+                'very-dense': 1.5
+            };
+            
+            const factor = densityFactors[this.params.vegetationDensity] || 1.0;
+            this.vegetationGroup.children.forEach((tree, index) => {
+                tree.visible = Math.random() < factor;
+            });
+        }
+    }
+
+    updateVegetationVisibility(visible) {
+        if (this.vegetationGroup) {
+            this.vegetationGroup.visible = visible;
+        }
+    }
+
+    updateWindVectorVisibility(visible) {
+        if (this.windVectorGroup) {
+            this.windVectorGroup.visible = visible;
+        }
+    }
+
+    updateHeatZoneVisibility(visible) {
+        // Implementation for heat zone visualization
+        this.fireMeshes.forEach(mesh => {
+            if (mesh.material.name === 'heatZone') {
+                mesh.visible = visible;
+            }
+        });
+    }
+
+    updateSmokeVisibility(visible) {
+        // Implementation for smoke particle visibility
+        this.smokeParticles.forEach(particle => {
+            particle.visible = visible;
+        });
+    }
+
+    switchTo3DMode() {
+        this.isARMode = false;
+        
+        // Update UI
+        document.getElementById('3d-mode-btn').classList.add('active');
+        document.getElementById('ar-mode-btn').classList.remove('active');
+        document.getElementById('viz-mode-title').textContent = '3D Fire Simulation';
+        document.getElementById('ar-instructions').style.display = 'none';
+        document.getElementById('camera-controls').style.display = 'block';
+        document.getElementById('ar-overlay').style.display = 'none';
+
+        // Reset to regular 3D scene
+        if (this.arContext) {
+            this.arContext.arController.dispose();
+            this.arContext = null;
+        }
+
+        showToast('Switched to 3D visualization mode', 'success');
+    }
+
+    async switchToARMode() {
+        try {
+            // Check for camera support
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                showToast('Camera access not supported in this browser', 'error');
+                return;
+            }
+
+            this.isARMode = true;
+            
+            // Update UI
+            document.getElementById('ar-mode-btn').classList.add('active');
+            document.getElementById('3d-mode-btn').classList.remove('active');
+            document.getElementById('viz-mode-title').textContent = 'AR Fire Simulation';
+            document.getElementById('ar-instructions').style.display = 'block';
+            document.getElementById('camera-controls').style.display = 'none';
+            document.getElementById('ar-overlay').style.display = 'block';
+
+            // Initialize AR context
+            await this.initializeAR();
+            
+            showToast('AR mode activated! Point camera at a flat surface', 'success');
+        } catch (error) {
+            console.error('Error switching to AR mode:', error);
+            showToast('Failed to activate AR mode. Check camera permissions.', 'error');
+            this.switchTo3DMode();
+        }
+    }
+
+    async initializeAR() {
+        // Simplified AR initialization
+        // In a real implementation, you would use AR.js or WebXR
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: 'environment' } 
+            });
+            
+            // Create video element for camera feed
+            const video = document.createElement('video');
+            video.srcObject = stream;
+            video.play();
+            
+            // Update canvas to show camera feed as background
+            this.setupARScene(video);
+            
+        } catch (error) {
+            throw new Error('Camera access denied or not available');
+        }
+    }
+
+    setupARScene(video) {
+        // Create texture from video
+        const videoTexture = new THREE.VideoTexture(video);
+        videoTexture.minFilter = THREE.LinearFilter;
+        videoTexture.magFilter = THREE.LinearFilter;
+        
+        // Set as scene background
+        this.scene.background = videoTexture;
+        
+        // Adjust camera for AR
+        this.camera.position.set(0, 100, 200);
+        this.camera.lookAt(0, 0, 0);
+    }
+
+    startSimulation() {
+        if (this.isSimulationRunning) return;
+
+        this.isSimulationRunning = true;
+        this.simulationStartTime = Date.now();
+        
+        // Add initial fire source at center
+        const centerX = Math.floor(this.gridSize / 2);
+        const centerZ = Math.floor(this.gridSize / 2);
+        this.igniteCell(centerX, centerZ);
+
+        // Update UI
+        document.getElementById('ar-status').textContent = 'Running';
+        document.getElementById('ar-status').style.background = 'rgba(245, 158, 11, 0.2)';
+        document.getElementById('ar-status').style.color = '#F59E0B';
+        document.getElementById('start-ar-simulation').innerHTML = '<i class="fas fa-pause"></i> Pause Simulation';
+
+        // Start simulation timer
+        this.startSimulationTimer();
+
+        showToast('3D fire simulation started', 'success');
+    }
+
+    resetSimulation() {
+        this.isSimulationRunning = false;
+        this.simulationStartTime = null;
+
+        // Clear all fire meshes
+        this.fireMeshes.forEach(mesh => {
+            this.scene.remove(mesh);
+        });
+        this.fireMeshes = [];
+
+        // Reset fire grid
+        this.initializeFireGrid();
+
+        // Update UI
+        document.getElementById('ar-status').textContent = 'Ready';
+        document.getElementById('ar-status').style.background = 'rgba(16, 185, 129, 0.2)';
+        document.getElementById('ar-status').style.color = '#10B981';
+        document.getElementById('ar-simulation-time').textContent = '00:00';
+        document.getElementById('start-ar-simulation').innerHTML = '<i class="fas fa-play"></i> Start 3D Simulation';
+
+        // Reset metrics
+        this.updateMetrics();
+
+        showToast('Simulation reset', 'success');
+    }
+
+    igniteCell(x, z) {
+        if (this.fireGrid[x] && this.fireGrid[x][z] && this.fireGrid[x][z].state === 'vegetation') {
+            this.fireGrid[x][z].state = 'burning';
+            this.fireGrid[x][z].temperature = 800;
+            this.createFireMesh(x, z);
+        }
+    }
+
+    createFireMesh(x, z) {
+        const geometry = new THREE.BoxGeometry(this.cellSize, 20, this.cellSize);
+        const material = new THREE.MeshBasicMaterial({ 
+            color: 0xFF4500,
+            transparent: true,
+            opacity: 0.8
+        });
+        
+        const mesh = new THREE.Mesh(geometry, material);
+        const worldX = (x - this.gridSize / 2) * this.cellSize;
+        const worldZ = (z - this.gridSize / 2) * this.cellSize;
+        mesh.position.set(worldX, 10, worldZ);
+        
+        this.scene.add(mesh);
+        this.fireMeshes.push(mesh);
+        this.fireGrid[x][z].mesh = mesh;
+
+        // Add fire animation
+        this.animateFireMesh(mesh);
+    }
+
+    animateFireMesh(mesh) {
+        const originalY = mesh.position.y;
+        const animateFrame = () => {
+            if (mesh.parent) {
+                mesh.position.y = originalY + Math.sin(Date.now() * 0.01) * 5;
+                mesh.material.opacity = 0.6 + Math.sin(Date.now() * 0.02) * 0.2;
+                requestAnimationFrame(animateFrame);
+            }
+        };
+        animateFrame();
+    }
+
+    simulateFireSpread() {
+        if (!this.isSimulationRunning) return;
+
+        const newIgnitions = [];
+
+        for (let x = 0; x < this.gridSize; x++) {
+            for (let z = 0; z < this.gridSize; z++) {
+                const cell = this.fireGrid[x][z];
+                
+                if (cell.state === 'burning') {
+                    // Check neighboring cells for spread
+                    const neighbors = this.getNeighbors(x, z);
+                    
+                    neighbors.forEach(([nx, nz]) => {
+                        if (this.fireGrid[nx] && this.fireGrid[nx][nz] && 
+                            this.fireGrid[nx][nz].state === 'vegetation') {
+                            
+                            const spreadProbability = this.calculateSpreadProbability(x, z, nx, nz);
+                            
+                            if (Math.random() < spreadProbability) {
+                                newIgnitions.push([nx, nz]);
+                            }
+                        }
+                    });
+
+                    // Burn down fuel
+                    cell.fuelLoad -= 0.1;
+                    if (cell.fuelLoad <= 0) {
+                        cell.state = 'burned';
+                        cell.temperature = 100;
+                        if (cell.mesh) {
+                            cell.mesh.material.color.setHex(0x654321); // Brown for burned
+                            cell.mesh.material.opacity = 0.6;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Apply new ignitions
+        newIgnitions.forEach(([x, z]) => {
+            this.igniteCell(x, z);
+        });
+    }
+
+    getNeighbors(x, z) {
+        const neighbors = [];
+        for (let dx = -1; dx <= 1; dx++) {
+            for (let dz = -1; dz <= 1; dz++) {
+                if (dx === 0 && dz === 0) continue;
+                const nx = x + dx;
+                const nz = z + dz;
+                if (nx >= 0 && nx < this.gridSize && nz >= 0 && nz < this.gridSize) {
+                    neighbors.push([nx, nz]);
+                }
+            }
+        }
+        return neighbors;
+    }
+
+    calculateSpreadProbability(fromX, fromZ, toX, toZ) {
+        let baseProbability = 0.1;
+
+        // Wind effect
+        const windRadians = (this.params.windDirection * Math.PI) / 180;
+        const windX = Math.cos(windRadians);
+        const windZ = Math.sin(windRadians);
+        const direction = [toX - fromX, toZ - fromZ];
+        const windAlignment = (direction[0] * windX + direction[1] * windZ);
+        
+        if (windAlignment > 0) {
+            baseProbability += this.params.windSpeed / 1000;
+        }
+
+        // Humidity effect
+        baseProbability *= (100 - this.params.humidity) / 100;
+
+        // Temperature effect
+        baseProbability *= this.params.temperature / 30;
+
+        // Fuel load effect
+        const fuelLoad = this.fireGrid[toX][toZ].fuelLoad;
+        baseProbability *= fuelLoad;
+
+        return Math.min(baseProbability, 0.8);
+    }
+
+    startSimulationTimer() {
+        const updateTimer = () => {
+            if (this.isSimulationRunning && this.simulationStartTime) {
+                const elapsed = Math.floor((Date.now() - this.simulationStartTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                document.getElementById('ar-simulation-time').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                // Update metrics
+                this.updateMetrics();
+
+                // Simulate fire spread
+                if (elapsed % 2 === 0) { // Spread every 2 seconds
+                    this.simulateFireSpread();
+                }
+
+                setTimeout(updateTimer, 1000);
+            }
+        };
+        updateTimer();
+    }
+
+    updateMetrics() {
+        let burnedArea = 0;
+        let firePerimeter = 0;
+        let activeFireSources = 0;
+        let maxTemp = this.params.temperature;
+
+        for (let x = 0; x < this.gridSize; x++) {
+            for (let z = 0; z < this.gridSize; z++) {
+                const cell = this.fireGrid[x][z];
+                if (cell.state === 'burning') {
+                    activeFireSources++;
+                    burnedArea += (this.cellSize * this.cellSize) / 10000; // Convert to hectares
+                    maxTemp = Math.max(maxTemp, cell.temperature);
+                } else if (cell.state === 'burned') {
+                    burnedArea += (this.cellSize * this.cellSize) / 10000;
+                }
+            }
+        }
+
+        firePerimeter = Math.sqrt(burnedArea * Math.PI * 4) / 1000; // Rough perimeter in km
+        const spreadRate = this.simulationStartTime ? 
+            (burnedArea / ((Date.now() - this.simulationStartTime) / 60000)) * 60 : 0; // ha/hr
+
+        // Update UI
+        document.getElementById('ar-burn-area').textContent = burnedArea.toFixed(1) + ' ha';
+        document.getElementById('ar-fire-perimeter').textContent = firePerimeter.toFixed(2) + ' km';
+        document.getElementById('ar-spread-rate').textContent = Math.round(spreadRate) + ' m/min';
+        document.getElementById('ar-max-temp').textContent = Math.round(maxTemp) + '°C';
+        document.getElementById('fire-sources-count').textContent = activeFireSources;
+        document.getElementById('active-cells-count').textContent = 
+            this.fireMeshes.filter(mesh => mesh.parent).length;
+    }
+
+    handleCanvasClick(event) {
+        if (!this.isSimulationRunning) return;
+
+        const rect = event.target.getBoundingClientRect();
+        const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera({ x, y }, this.camera);
+
+        if (this.terrainMesh) {
+            const intersects = raycaster.intersectObject(this.terrainMesh);
+            if (intersects.length > 0) {
+                const point = intersects[0].point;
+                const gridX = Math.floor((point.x + 500) / this.cellSize);
+                const gridZ = Math.floor((point.z + 500) / this.cellSize);
+                
+                if (gridX >= 0 && gridX < this.gridSize && gridZ >= 0 && gridZ < this.gridSize) {
+                    this.igniteCell(gridX, gridZ);
+                    showToast('Fire ignited at clicked location', 'warning');
+                }
+            }
+        }
+    }
+
+    rotateCamera(angle) {
+        if (this.isARMode) return;
+        
+        const radius = this.camera.position.distanceTo(new THREE.Vector3(0, 0, 0));
+        const currentAngle = Math.atan2(this.camera.position.z, this.camera.position.x);
+        const newAngle = currentAngle + angle;
+        
+        this.camera.position.x = Math.cos(newAngle) * radius;
+        this.camera.position.z = Math.sin(newAngle) * radius;
+        this.camera.lookAt(0, 0, 0);
+    }
+
+    zoomCamera(factor) {
+        if (this.isARMode) return;
+        
+        this.camera.position.multiplyScalar(factor);
+        this.camera.lookAt(0, 0, 0);
+    }
+
+    resetCamera() {
+        if (this.isARMode) return;
+        
+        this.camera.position.set(500, 400, 500);
+        this.camera.lookAt(0, 0, 0);
+    }
+
+    toggleFullscreen() {
+        const container = document.getElementById('ar-scene-container');
+        if (!document.fullscreenElement) {
+            container.requestFullscreen().then(() => {
+                showToast('Entered fullscreen mode', 'success');
+            }).catch(() => {
+                showToast('Fullscreen not supported', 'warning');
+            });
+        } else {
+            document.exitFullscreen();
+        }
+    }
+
+    updateLoadingState(loading) {
+        const loadingOverlay = document.getElementById('ar-loading');
+        if (loadingOverlay) {
+            loadingOverlay.style.display = loading ? 'flex' : 'none';
+        }
+    }
+
+    animate() {
+        this.animationFrameId = requestAnimationFrame(() => this.animate());
+        
+        if (this.renderer && this.scene && this.camera) {
+            this.renderer.render(this.scene, this.camera);
+        }
+    }
+
+    dispose() {
+        if (this.animationFrameId) {
+            cancelAnimationFrame(this.animationFrameId);
+        }
+        
+        if (this.renderer) {
+            this.renderer.dispose();
+        }
+        
+        if (this.arContext) {
+            this.arContext.arController.dispose();
+        }
+    }
+}
+
+// Initialize AR Visualization when DOM is loaded
+let arVisualization;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // ... existing initialization code ...
+
+    // Initialize AR Visualization
+    setTimeout(() => {
+        if (typeof THREE !== 'undefined') {
+            arVisualization = new ARFireVisualization();
+        } else {
+            console.warn('Three.js not loaded, AR visualization disabled');
+        }
+    }, 2000); // Delay to ensure other components are loaded
+});
+
+// Handle window resize for AR canvas
+window.addEventListener('resize', () => {
+    if (arVisualization && arVisualization.renderer && arVisualization.camera) {
+        const canvas = document.getElementById('ar-canvas');
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+        
+        arVisualization.camera.aspect = width / height;
+        arVisualization.camera.updateProjectionMatrix();
+        arVisualization.renderer.setSize(width, height);
+    }
+});
+
                 baseImpact = 0.6;
                 break;
         }
