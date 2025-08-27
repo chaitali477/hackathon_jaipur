@@ -26,6 +26,7 @@
                 <a href="#fire-simulation" class="nav-link">Simulation</a>
                 <a href="#resource-optimization" class="nav-link">Resource Optimization</a>
                 <a href="#environmental-impact" class="nav-link">Environmental Impact</a>
+                <a href="#training-mode" class="nav-link">Training Mode</a>
                 <a href="#alerts" class="nav-link">Alerts</a>
                 <a href="#data-sources" class="nav-link">Data Sources</a>
                 <a href="#analytics" class="nav-link">Analytics</a>
@@ -1152,6 +1153,239 @@
                         <i class="fas fa-download"></i>
                         Export Analysis
                     </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Training Mode Section -->
+    <section id="training-mode" class="section">
+        <div class="section-header">
+            <h2>Community Training & Volunteer Engagement</h2>
+            <p>Interactive simulation training for wildfire control and prevention strategies</p>
+        </div>
+        <div class="section-content">
+            <div class="training-mode-layout">
+                <!-- Training Controls Panel -->
+                <div class="training-controls-panel">
+                    <div class="panel-header">
+                        <h3>Training Scenario</h3>
+                        <div class="training-score">
+                            <span class="score-label">Score:</span>
+                            <span class="score-value" id="training-score">0</span>
+                            <span class="score-unit">points</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Scenario Selection -->
+                    <div class="scenario-selection">
+                        <h4>Choose Your Scenario</h4>
+                        <div class="scenario-buttons">
+                            <button class="scenario-btn active" data-scenario="forest-fire">
+                                <i class="fas fa-tree"></i>
+                                <span>Forest Fire</span>
+                            </button>
+                            <button class="scenario-btn" data-scenario="grassland-fire">
+                                <i class="fas fa-seedling"></i>
+                                <span>Grassland Fire</span>
+                            </button>
+                            <button class="scenario-btn" data-scenario="urban-interface">
+                                <i class="fas fa-city"></i>
+                                <span>Urban Interface</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Control Actions -->
+                    <div class="control-actions">
+                        <h4>Fire Control Actions</h4>
+                        <div class="action-buttons">
+                            <button class="action-btn" id="create-fireline" data-action="fireline">
+                                <i class="fas fa-minus"></i>
+                                <span>Create Fireline</span>
+                                <small>Cost: 10 points</small>
+                            </button>
+                            <button class="action-btn" id="deploy-water" data-action="water">
+                                <i class="fas fa-tint"></i>
+                                <span>Deploy Water</span>
+                                <small>Cost: 15 points</small>
+                            </button>
+                            <button class="action-btn" id="evacuate-area" data-action="evacuate">
+                                <i class="fas fa-users"></i>
+                                <span>Evacuate Area</span>
+                                <small>Cost: 5 points</small>
+                            </button>
+                            <button class="action-btn" id="controlled-burn" data-action="burn">
+                                <i class="fas fa-fire"></i>
+                                <span>Controlled Burn</span>
+                                <small>Cost: 20 points</small>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Training Progress -->
+                    <div class="training-progress">
+                        <h4>Your Progress</h4>
+                        <div class="progress-stats">
+                            <div class="progress-stat">
+                                <span class="stat-label">Level</span>
+                                <span class="stat-value" id="training-level">1</span>
+                            </div>
+                            <div class="progress-stat">
+                                <span class="stat-label">Scenarios Completed</span>
+                                <span class="stat-value" id="scenarios-completed">0</span>
+                            </div>
+                            <div class="progress-stat">
+                                <span class="stat-label">Best Score</span>
+                                <span class="stat-value" id="best-score">0</span>
+                            </div>
+                        </div>
+                        
+                        <div class="badges-section">
+                            <h5>Achievements</h5>
+                            <div class="badges-grid" id="badges-grid">
+                                <div class="badge locked" data-badge="first-save">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>First Save</span>
+                                </div>
+                                <div class="badge locked" data-badge="fire-expert">
+                                    <i class="fas fa-fire-extinguisher"></i>
+                                    <span>Fire Expert</span>
+                                </div>
+                                <div class="badge locked" data-badge="community-hero">
+                                    <i class="fas fa-medal"></i>
+                                    <span>Community Hero</span>
+                                </div>
+                                <div class="badge locked" data-badge="perfect-score">
+                                    <i class="fas fa-star"></i>
+                                    <span>Perfect Score</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Control Buttons -->
+                    <div class="training-controls">
+                        <button id="start-training" class="control-btn primary">
+                            <i class="fas fa-play"></i>
+                            Start Training
+                        </button>
+                        <button id="pause-training" class="control-btn">
+                            <i class="fas fa-pause"></i>
+                            Pause
+                        </button>
+                        <button id="reset-training" class="control-btn">
+                            <i class="fas fa-refresh"></i>
+                            Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Training Simulation Map -->
+                <div class="training-simulation-container">
+                    <div class="panel-header">
+                        <h3>Interactive Fire Simulation</h3>
+                        <div class="simulation-status">
+                            <span class="status-indicator" id="training-status">Ready</span>
+                            <span class="timer" id="training-timer">00:00</span>
+                        </div>
+                    </div>
+                    <div id="training-map" class="training-map"></div>
+                    
+                    <!-- Action Instructions -->
+                    <div class="action-instructions">
+                        <div class="instruction-card active" id="instruction-card">
+                            <i class="fas fa-info-circle"></i>
+                            <p>Click on the map to place your selected action. Watch how it affects fire spread!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Training Results Panel -->
+                <div class="training-results-panel">
+                    <div class="panel-header">
+                        <h3>Scenario Analysis</h3>
+                        <div class="comparison-toggle">
+                            <button class="toggle-btn active" data-view="with-actions">With Actions</button>
+                            <button class="toggle-btn" data-view="without-actions">Without Actions</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Performance Metrics -->
+                    <div class="performance-metrics">
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-value" id="fire-reduction">0%</span>
+                                <span class="metric-label">Fire Spread Reduction</span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-home"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-value" id="structures-saved">0</span>
+                                <span class="metric-label">Structures Saved</span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-value" id="forest-preserved">0</span>
+                                <span class="metric-label">Hectares Preserved</span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-value" id="response-time">0</span>
+                                <span class="metric-label">Response Time (min)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Impact Chart -->
+                    <div class="impact-chart-container">
+                        <h4>Action Impact Comparison</h4>
+                        <canvas id="trainingImpactChart"></canvas>
+                    </div>
+
+                    <!-- Feedback and Tips -->
+                    <div class="training-feedback">
+                        <h4>Performance Feedback</h4>
+                        <div class="feedback-content" id="feedback-content">
+                            <div class="feedback-item placeholder">
+                                <i class="fas fa-lightbulb"></i>
+                                <span>Complete a training scenario to receive personalized feedback!</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Learning Resources -->
+                    <div class="learning-resources">
+                        <h4>Learn More</h4>
+                        <div class="resource-links">
+                            <a href="#" class="resource-link">
+                                <i class="fas fa-book"></i>
+                                <span>Fire Control Techniques</span>
+                            </a>
+                            <a href="#" class="resource-link">
+                                <i class="fas fa-video"></i>
+                                <span>Training Videos</span>
+                            </a>
+                            <a href="#" class="resource-link">
+                                <i class="fas fa-users"></i>
+                                <span>Community Guidelines</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

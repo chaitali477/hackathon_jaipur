@@ -2642,6 +2642,629 @@ body::after {
     font-size: 0.95rem;
 }
 
+/* Training Mode Styles */
+.training-mode-layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 2rem;
+    align-items: start;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.training-controls-panel,
+.training-simulation-container,
+.training-results-panel {
+    background: rgba(30, 41, 59, 0.85);
+    border-radius: 20px;
+    padding: 2rem;
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 69, 0, 0.2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.training-score {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: rgba(255, 69, 0, 0.1);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 69, 0, 0.3);
+}
+
+.score-label {
+    color: #CBD5E1;
+    font-size: 0.9rem;
+}
+
+.score-value {
+    color: #FF4500;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.score-unit {
+    color: #94A3B8;
+    font-size: 0.8rem;
+}
+
+.scenario-selection {
+    margin-bottom: 2rem;
+}
+
+.scenario-selection h4 {
+    color: #CBD5E1;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.scenario-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.scenario-btn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 69, 0, 0.2);
+    border-radius: 12px;
+    color: #CBD5E1;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.scenario-btn:hover {
+    background: rgba(255, 69, 0, 0.1);
+    border-color: rgba(255, 69, 0, 0.4);
+    transform: translateY(-2px);
+}
+
+.scenario-btn.active {
+    background: rgba(255, 69, 0, 0.2);
+    border-color: rgba(255, 69, 0, 0.5);
+    color: #F8FAFC;
+}
+
+.scenario-btn i {
+    color: #FF4500;
+    font-size: 1.2rem;
+    width: 20px;
+    text-align: center;
+}
+
+.control-actions {
+    margin-bottom: 2rem;
+}
+
+.control-actions h4 {
+    color: #CBD5E1;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 69, 0, 0.2);
+    border-radius: 12px;
+    color: #CBD5E1;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.action-btn:hover {
+    background: rgba(255, 69, 0, 0.1);
+    border-color: rgba(255, 69, 0, 0.4);
+    transform: translateY(-2px);
+}
+
+.action-btn.selected {
+    background: rgba(255, 69, 0, 0.2);
+    border-color: rgba(255, 69, 0, 0.5);
+    color: #F8FAFC;
+}
+
+.action-btn i {
+    color: #FF4500;
+    font-size: 1.5rem;
+}
+
+.action-btn span {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.action-btn small {
+    color: #94A3B8;
+    font-size: 0.75rem;
+}
+
+.training-progress {
+    margin-bottom: 2rem;
+}
+
+.training-progress h4 {
+    color: #CBD5E1;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.progress-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.progress-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 69, 0, 0.1);
+}
+
+.progress-stat .stat-label {
+    color: #94A3B8;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+}
+
+.progress-stat .stat-value {
+    color: #FF4500;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.badges-section h5 {
+    color: #CBD5E1;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.badges-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 69, 0, 0.2);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.badge.locked {
+    background: rgba(15, 23, 42, 0.4);
+    color: #64748B;
+    border-color: rgba(100, 116, 139, 0.2);
+}
+
+.badge.unlocked {
+    background: rgba(255, 69, 0, 0.2);
+    color: #FF4500;
+    border-color: rgba(255, 69, 0, 0.4);
+    box-shadow: 0 4px 12px rgba(255, 69, 0, 0.2);
+}
+
+.badge i {
+    font-size: 1.2rem;
+}
+
+.badge span {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.training-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.training-simulation-container {
+    position: relative;
+}
+
+.simulation-status {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.status-indicator {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: rgba(16, 185, 129, 0.2);
+    color: #10B981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.timer {
+    color: #94A3B8;
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.training-map {
+    height: 500px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 69, 0, 0.2);
+    background: rgba(15, 23, 42, 0.6);
+    position: relative;
+    margin: 1rem 0;
+}
+
+.action-instructions {
+    margin-top: 1rem;
+}
+
+.instruction-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 12px;
+    color: #3B82F6;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.instruction-card.success {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #10B981;
+}
+
+.instruction-card i {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.comparison-toggle {
+    display: flex;
+    gap: 0.25rem;
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: 8px;
+    padding: 0.25rem;
+}
+
+.toggle-btn {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: #94A3B8;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.8rem;
+}
+
+.toggle-btn.active {
+    background: rgba(255, 69, 0, 0.2);
+    color: #FF4500;
+}
+
+.performance-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.performance-metrics .metric-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 69, 0, 0.1);
+}
+
+.performance-metrics .metric-icon {
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(255, 69, 0, 0.3), rgba(255, 140, 0, 0.2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FF4500;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.performance-metrics .metric-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.performance-metrics .metric-value {
+    color: #F8FAFC;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.performance-metrics .metric-label {
+    color: #94A3B8;
+    font-size: 0.75rem;
+}
+
+.impact-chart-container {
+    margin-bottom: 2rem;
+}
+
+.impact-chart-container h4 {
+    color: #CBD5E1;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.impact-chart-container canvas {
+    height: 200px !important;
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 69, 0, 0.1);
+}
+
+.training-feedback {
+    margin-bottom: 2rem;
+}
+
+.training-feedback h4 {
+    color: #CBD5E1;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.feedback-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.feedback-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 69, 0, 0.1);
+    color: #CBD5E1;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.feedback-item.placeholder {
+    color: #64748B;
+    font-style: italic;
+}
+
+.feedback-item.success {
+    border-color: rgba(16, 185, 129, 0.3);
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.feedback-item.warning {
+    border-color: rgba(245, 158, 11, 0.3);
+    background: rgba(245, 158, 11, 0.05);
+}
+
+.feedback-item i {
+    color: #FF4500;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+}
+
+.feedback-item.success i {
+    color: #10B981;
+}
+
+.feedback-item.warning i {
+    color: #F59E0B;
+}
+
+.learning-resources h4 {
+    color: #CBD5E1;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.resource-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.resource-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid rgba(255, 69, 0, 0.1);
+    border-radius: 8px;
+    color: #CBD5E1;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.resource-link:hover {
+    background: rgba(255, 69, 0, 0.1);
+    border-color: rgba(255, 69, 0, 0.3);
+    color: #F8FAFC;
+    transform: translateY(-1px);
+}
+
+.resource-link i {
+    color: #FF4500;
+    width: 16px;
+    text-align: center;
+}
+
+/* Training Map Fire Visualization */
+.training-fire-cell {
+    position: absolute;
+    background: radial-gradient(circle, #FF4500, #FF8C00);
+    border-radius: 50%;
+    animation: trainingFireGlow 2s infinite alternate;
+    pointer-events: none;
+}
+
+.training-action-marker {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    z-index: 10;
+    animation: pulseAction 2s infinite;
+}
+
+.training-action-marker.fireline {
+    background: #3B82F6;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+}
+
+.training-action-marker.water {
+    background: #06B6D4;
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.6);
+}
+
+.training-action-marker.evacuate {
+    background: #F59E0B;
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
+}
+
+.training-action-marker.burn {
+    background: #EF4444;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+}
+
+@keyframes trainingFireGlow {
+    0% {
+        box-shadow: 0 0 10px rgba(255, 69, 0, 0.6);
+        transform: scale(1);
+    }
+    100% {
+        box-shadow: 0 0 20px rgba(255, 69, 0, 0.9);
+        transform: scale(1.1);
+    }
+}
+
+@keyframes pulseAction {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+}
+
+/* Responsive Design for Training Mode */
+@media (max-width: 1200px) {
+    .training-mode-layout {
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .training-simulation-container {
+        grid-column: span 2;
+    }
+
+    .performance-metrics {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .training-mode-layout {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .scenario-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .scenario-btn {
+        flex: 1;
+        min-width: 140px;
+        padding: 0.75rem;
+    }
+
+    .action-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+
+    .progress-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .badges-grid {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 0.5rem;
+    }
+
+    .badge {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .badge span {
+        font-size: 0.7rem;
+    }
+
+    .training-controls {
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+
+    .training-map {
+        height: 400px;
+    }
+}
+
 /* Responsive Design for Environmental Impact */
 @media (max-width: 1200px) {
     .environmental-impact-layout {
